@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  ALUMNO
+  ADMIN
+}
+
+enum EstadoInscripcion {
+  PENDIENTE
+  APROBADO
+  RECHAZADO
+}
+
+enum Turno {
+  MANANA
+  TARDE
+  NOCHE
+}
+
+enum Genero {
+  MASCULINO
+  FEMENINO
+  OTRO
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  rol          Rol      @default(ALUMNO)
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  alumno Alumno?
+}
+
+model Carrera {
+  id        String   @id @default(uuid())
+  nombre    String   @unique
+  descripcion String?
+  activa    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  alumnos Alumno[]
+}
+
+
+
+model Alumno {
+  id              String            @id @default(uuid())
+  cedula          String            @unique
+  nombres         String
+  apellidos       String
+  fechaNacimiento DateTime
+  genero          Genero
+  telefono        String
+  carreraId       String
+  turno           Turno
+  anioIngreso     Int
+  estado          EstadoInscripcion @default(PENDIENTE)
+  observaciones   String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  carrera Carrera @relation(fields: [carreraId], references: [id])
+
+  @@index([estado])
+  @@index([carreraId])
+}
