@@ -26,7 +26,13 @@ function PantallaCarga() {
 }
 
 export default function App() {
-  const { token, usuario, esAdmin, cerrarSesion } = useAuth();
+  const { token, usuario, alumno, esAdmin, cerrarSesion } = useAuth();
+
+  const nombreUsuario = alumno
+    ? `${alumno.nombres} ${alumno.apellidos}`
+    : esAdmin
+      ? "Administración"
+      : usuario?.email;
 
   return (
     <div className="flex min-h-full flex-col">
@@ -42,7 +48,7 @@ export default function App() {
           <nav className="flex items-center gap-2 text-sm">
             {token ? (
               <>
-                <span className="hidden text-slate-500 md:block">{usuario?.email}</span>
+                <span className="hidden text-slate-500 md:block">{nombreUsuario}</span>
                 <button onClick={cerrarSesion} className="btn-secundario">
                   <LogOut className="size-4" />
                   <span className="hidden sm:inline">Salir</span>
